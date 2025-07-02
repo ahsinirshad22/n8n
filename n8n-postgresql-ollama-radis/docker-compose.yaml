@@ -16,14 +16,16 @@ services:
       - DB_POSTGRESDB_USER=$SERVICE_USER_POSTGRES
       - DB_POSTGRESDB_SCHEMA=public
       - DB_POSTGRESDB_PASSWORD=$SERVICE_PASSWORD_POSTGRES
-            # Add timeout configurations for HTTP requests
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
-      - EXECUTIONS_TIMEOUT=1800  # 30 minutes
-      - EXECUTIONS_TIMEOUT_MAX=3600  # 60 minutes
-            # Enable community nodes
+      - EXECUTIONS_TIMEOUT=1800
+      - EXECUTIONS_TIMEOUT_MAX=3600
       - N8N_COMMUNITY_PACKAGES_ENABLED=true
     volumes:
       - 'n8n-data:/home/node/.n8n'
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
     depends_on:
       postgresql:
         condition: service_healthy
@@ -56,11 +58,8 @@ services:
       - 'ollama_storage:/root/.ollama'
     environment:
       - SERVICE_FQDN_OLLAMA_11434
-      # Keep only essential Ollama optimizations
       - OLLAMA_KEEP_ALIVE=5m
-      - OLLAMA_ORIGINS=*
-      - OLLAMA_MODELS=/usr/share/ollama/.ollama/models
-        # Additional optimizations (optional)
+      - 'OLLAMA_ORIGINS=*'
       - OLLAMA_MAX_LOADED_MODELS=2
       - OLLAMA_NUM_PARALLEL=2
       - OLLAMA_FLASH_ATTENTION=1
@@ -97,14 +96,13 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
-
   open-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: 'ghcr.io/open-webui/open-webui:main'
     container_name: webui_ollama
     environment:
       - SERVICE_FQDN_OPENWEBUI
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-ollama-webui-secret}
+      - 'OLLAMA_BASE_URL=http://ollama:11434'
+      - 'WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:-ollama-webui-secret}'
       - WEBUI_AUTH=false
     volumes:
       - 'open-webui-data:/app/backend/data'
