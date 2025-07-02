@@ -55,9 +55,15 @@ services:
     volumes:
       - 'ollama_storage:/root/.ollama'
     environment:
+      - SERVICE_FQDN_OLLAMA_11434
       # Keep only essential Ollama optimizations
       - OLLAMA_KEEP_ALIVE=5m
       - OLLAMA_ORIGINS=*
+      - OLLAMA_MODELS=/usr/share/ollama/.ollama/models
+        # Additional optimizations (optional)
+      - OLLAMA_MAX_LOADED_MODELS=2
+      - OLLAMA_NUM_PARALLEL=2
+      - OLLAMA_FLASH_ATTENTION=1
     dns:
       - 8.8.8.8
       - 8.8.4.4
